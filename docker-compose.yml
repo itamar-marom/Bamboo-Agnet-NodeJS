@@ -1,0 +1,46 @@
+version: '3'
+services:
+    bamboo:
+        image: linux-devops/bamboo-server:7.0.4
+        volumes:
+            - bamboo-volume:/var/atlassian/application-data/bamboo
+        ports:
+            - '54663:54663'
+            - '8085:8085'
+    bamboo-runner:
+        image: atlassian/bamboo-specs-runner:7.0.4
+    db:
+        image: postgres:9.6
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        networks:
+            - backend
+        environment:
+            - POSTGRES_HOST_AUTH_METHOD=trust
+        deploy:
+    vote:
+        image: bretfisher/examplevotingapp_vote
+        ports:
+            - '5000:80'
+        networks:
+            - frontend
+        deploy:
+            mode: global
+    result:
+        image: bretfisher/examplevotingapp_result
+        ports:
+            - '5001:80'
+        networks:
+            - backend
+    worker:
+        image: bretfisher/examplevotingapp_worker:java
+        networks:
+            - frontend
+            - backend
+        deploy:
+            mode: global
+networks:
+    frontend:
+    backend:
+volumes:
+    bamboo-volume:
