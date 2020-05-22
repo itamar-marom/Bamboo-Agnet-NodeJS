@@ -14,7 +14,8 @@ ENV BAMBOO_SERVER_INSTALL_DIR   /opt/atlassian/bamboo
 EXPOSE 8085
 EXPOSE $BAMBOO_JMS_CONNECTION_PORT
 
-RUN yum update -y && \
+RUN subscription-manager register --username linux-devops --password devops4ever --auto-attach &&\
+    yum update -y && \
     yum upgrade -y && \
     yum install -y curl git bash procps openssl libtcnative-1 openjdk-8-jdk
 #install Maven separately to avoid JDK 10 installation
