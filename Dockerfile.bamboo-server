@@ -1,5 +1,4 @@
 FROM registry.redhat.io/rhel7
-MAINTAINER Linux - Devops Team
 
 ARG BAMBOO_VERSION=7.0.4
 ENV BAMBOO_USER=bamboo
@@ -14,15 +13,18 @@ ENV BAMBOO_SERVER_INSTALL_DIR   /opt/atlassian/bamboo
 EXPOSE 8085
 EXPOSE $BAMBOO_JMS_CONNECTION_PORT
 
-RUN subscription-manager register --username linux-devops --password devops4ever --auto-attach &&\
-    yum update -y && \
+RUN subscription-manager register --username  --password  --auto-attach &&\
+    subscription-manager repos --enable=rhel-7-server-optional-rpms
+
+RUN yum update -y && \
     yum upgrade -y && \
-    yum install -y curl git bash procps openssl libtcnative-1 openjdk-8-jdk
+    yum groupinstall "Development Tools" &&\
+    yum install -y curl git bash procps openssl libtcnative-1 java-1.8.0-openjdk
 #install Maven separately to avoid JDK 10 installation
 RUN yum install -y maven
 
 RUN groupadd ${BAMBOO_GROUP} && \
-     useradd ${BAMBOO_USER} -d ${BAMBOO_USER_HOME} -g ${BAMBOO_GROUP}
+    useradd ${BAMBOO_USER} -d ${BAMBOO_USER_HOME} -g ${BAMBOO_GROUP}
 
 ARG DOWNLOAD_URL=https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz
 
